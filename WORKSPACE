@@ -53,7 +53,7 @@ maybe(
 
 load("@valdi//bzl:workspace_init.bzl", "valdi_initialize_workspace")
 
-valdi_initialize_workspace()
+valdi_initialize_workspace(target_platform = "macos")
 
 load("@valdi_npm//:repositories.bzl", "npm_repositories")
 
