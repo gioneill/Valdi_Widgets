@@ -1,18 +1,24 @@
 workspace(name = "valdi_widgets")
 
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-# # Replace to http_archive once the git repo is public.
-git_repository(
+# Valdi bleeding edge (https://github.com/Snapchat/Valdi)
+http_archive(
     name = "valdi",
-    remote = "https://github.com/Snapchat/Valdi.git",
-    branch = "main",
+    strip_prefix = "Valdi-45b28375a189da8f9c24544e3b2d40318d3386a9",
+    url = "https://github.com/Snapchat/Valdi/archive/45b28375a189da8f9c24544e3b2d40318d3386a9.tar.gz",
 )
 
-#local_repository(
-#    name = "valdi",
-#    path = "../Valdi",
-#)
+# For local development (uncomment to use local Valdi checkout):
+# local_repository(name = "valdi", path = "/Users/cholgate/Snapchat/Dev/mobile/client/src/open_source")
+
+# Valdi release beta-0.0.2 (https://github.com/Snapchat/Valdi/releases)
+# http_archive(
+#     name = "valdi",
+#     strip_prefix = "Valdi-beta-0.0.2",
+#     url = "https://github.com/Snapchat/Valdi/archive/refs/tags/beta-0.0.2.tar.gz",
+# )
 
 load("@valdi//bzl:workspace_prepare.bzl", "valdi_prepare_workspace")
 
@@ -51,9 +57,13 @@ maybe(
     name = "host_platform",
 )
 
-load("@valdi//bzl:workspace_init.bzl", "valdi_initialize_workspace")
+load("@valdi//bzl:workspace_init.bzl", "platform_dependency_rule", "valdi_initialize_workspace")
 
-valdi_initialize_workspace(target_platform = "macos")
+platform_dependency_rule(name = "platform_check")
+
+load("@platform_check//:target_platform.bzl", "VALDI_PLATFORM_DEPENDENCIES")
+
+valdi_initialize_workspace(VALDI_PLATFORM_DEPENDENCIES)
 
 load("@valdi_npm//:repositories.bzl", "npm_repositories")
 
